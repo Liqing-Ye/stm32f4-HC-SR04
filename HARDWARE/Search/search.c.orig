@@ -1,0 +1,76 @@
+#include "search.h"
+
+// 进度： 中断没写，直行怎么写？
+// pwm.c里面好像不用写中断才对
+
+void Search_Init(void)
+{
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE); 	//使能PORTD时钟	
+
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5; //PD1,PD2,PD3,PD4,PD5
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN; //输入功能
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; //上拉
+	GPIO_Init(GPIOD,&GPIO_InitStructure);  //初始化PA1
+	
+}
+void Run(void)
+{
+
+if (LL_IN == WHITE && LM_IN == BLACK  && MM_IN == WHITE){ //白白黑白白，11011
+	//直行
+	//电机速度：两侧相同
+		TIM_SetCompare1(TIM4,0);// (48000/65535)*100% = 73%
+		TIM_SetCompare2(TIM4,800); // 0
+		TIM_SetCompare3(TIM4,0);
+		TIM_SetCompare4(TIM4,800);
+		//delay_ms(10);
+	}
+	else if(LL_IN == BLACK && LM_IN == BLACK  && MM_IN == WHITE){ // 黑白白白白 
+	//左拐大弯
+	//电机速度：可以差速，可以不用
+		TIM_SetCompare1(TIM4,0);// (48000/65535)*100% = 73% 右轮快
+		TIM_SetCompare2(TIM4,800); // 0
+		TIM_SetCompare3(TIM4,0); // (18000/65535)*100% = 27%
+		TIM_SetCompare4(TIM4,200);
+		//delay_ms(10);
+	}
+	else if(LL_IN == WHITE && LM_IN == BLACK  && MM_IN == BLACK){ //白黑白白白
+	//左拐小弯
+	//电机速度
+		TIM_SetCompare1(TIM4,0);// (48000/65535)*100% = 73%
+		TIM_SetCompare2(TIM4,200); // 0
+		TIM_SetCompare3(TIM4,0); 
+		TIM_SetCompare4(TIM4,800);
+		//delay_ms(10);
+	}
+	else{
+		TIM_SetCompare1(TIM4,0);// (48000/65535)*100% = 73%
+		TIM_SetCompare2(TIM4,0); // 0
+		TIM_SetCompare3(TIM4,0);
+		TIM_SetCompare4(TIM4,0);
+	}
+//	TIM_SetCompare1(TIM4,0);// (48000/65535)*100% = 73%
+//	TIM_SetCompare2(TIM4,8000); // 0
+//	TIM_SetCompare3(TIM4,0);
+//	TIM_SetCompare4(TIM4,8000);
+}
+
+void ControlSpeed(void){
+	u16 led0pwmval=0;    
+	u8 dir=1;
+	if(dir)led0pwmval++;//dir==1 led0pwmval递增
+	else led0pwmval--;	//dir==0 led0pwmval递减 
+	if(led0pwmval>1000){
+			dir=0;//led0pwmval到达1000后，方向为递减
+			//TIM_SetCompare1(TIM4,10000);
+		}
+		if(led0pwmval==0){
+			dir=1;	//led0pwmval递减到0后，方向改为递增
+			//TIM_SetCompare1(TIM4,40000);
+		}
+		TIM_SetCompare1(TIM4,led0pwmval); //修改比较值，修改占空比
+		TIM_SetCompare3(TIM4,led0pwmval); //修改比较值，修改占空比
+		delay_ms(10);
+}

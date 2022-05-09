@@ -1,0 +1,111 @@
+#include "jr6001.h"
+
+void JR6001_Init(void){
+//	GPIO_InitTypeDef GPIO_InitStructure;
+	
+	UART4_init(9600);//初始化串口波特率为9600
+	
+//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE); // "UART4_init(9600); " 已经使能GPIOC时钟
+// 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1; //GPIOC1
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//输入功能
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;	//速度50MHz
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; //上拉
+//	GPIO_Init(GPIOC,&GPIO_InitStructure); //初始化PC1
+	
+	//JR6001_VolumeSetting(); // 播放音量设置为10
+}
+
+void JR6001_Voice(void){ // 播放语音文件“Data.mp3” //u8 musicFile[5]
+//	u8 i;
+	
+//	while(BUSY){
+//		delay_ms(10);
+//	}
+	
+//	set_u8(A_COMMAND);
+//	set_u8(E_COMMAND); // AE 停止播放
+	
+	////////////////////////////////////////////////////
+//	set_u8(B_COMMAND);
+//	set_u8(FOUR);
+//	set_u8(END_COMMAND);
+//	set_u8(ZERO);
+//	set_u8(ONE); // B4:01 单曲停止模式
+//	
+//	set_u8(A_COMMAND);
+//	set_u8(EIGHT);
+//	set_u8(END_COMMAND);
+//	set_u8(ZERO);
+//	set_u8(TWO); 
+//	set_u8(PATH_COMMAND);  // A8:02/ 播放Flash里面的歌曲
+//		
+//	set_u8(A_COMMAND);
+//	set_u8(SEVEN);
+//	set_u8(END_COMMAND);
+//	set_u8(ZERO);
+//	set_u8(ZERO);
+//	set_u8(ZERO);
+//	set_u8(ZERO);
+//	set_u8(ONE); // 播放 00001
+	//////////////////////////////////////////////////
+//	set_u8('B');
+//	set_u8('4');
+//	set_u8(':');
+//	set_u8('0');
+//	set_u8('1'); // B4:01 单曲停止模式
+//	
+//	set_u8('A');
+//	set_u8('8');
+//	set_u8(':');
+//	set_u8('0');
+//	set_u8('2'); 
+//	set_u8('/');  // A8:02/ 播放Flash里面的歌曲
+		
+//	set_u8('A');
+//	set_u8('7');
+//	set_u8(':');
+//	set_u8('0');
+//	set_u8('0');
+//	set_u8('0');
+//	set_u8('0');
+//	set_u8('1'); // 播放 00001
+//	set_u8('.');
+//	set_u8('m');
+//	set_u8('p');
+//	set_u8('3');
+
+	printf("A8:00/00001*mp3");
+				delay_ms(100);
+				printf("A8:01/00001*mp3");
+				delay_ms(100);
+				printf("A8:02/00001*mp3");
+				delay_ms(100);
+	
+	//USART_SendData(UART4, BASIC_COMMAND); // data 要求 u8类型大小的数据
+	//delay_us(2);
+	
+//	for(i=0;i<5;i++){
+//		USART_SendData(UART4, musicFile[i]); //ZERO+musicFile[i]
+//	}
+
+	
+}
+
+void JR6001_VolumeSetting(void){
+	USART_SendData(UART4, A_COMMAND); 
+	USART_SendData(UART4, F_COMMAND);
+	USART_SendData(UART4, END_COMMAND);
+	
+	USART_SendData(UART4, THREE); // 音量设置为30  
+	USART_SendData(UART4, ZERO); 
+}
+
+void set_u8(u8 ch){
+//	while((UART4->SR&0X40)==0);
+//	USART_SendData(UART4, ch);
+	
+	UART4->SR; //	USART_GetFlagStatus(UART4, USART_FLAG_TC);
+	USART_SendData(UART4, ch);
+	while( USART_GetFlagStatus(UART4, USART_FLAG_TC) != SET);
+}
+

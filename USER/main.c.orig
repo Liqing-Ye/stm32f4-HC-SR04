@@ -1,0 +1,75 @@
+#include "sys.h"
+#include "delay.h"
+#include "usart.h"
+#include "timer.h"
+#include "hc_sr04.h"
+//#include "pwm.h"
+//#include "search.h"
+//#include "ina226.h"
+//#include "jr6001.h"
+//#include "gs.h"
+
+int main(void)
+{
+		//extern s32 Distance; //超声波传感器的距离
+	
+//    short Voltage;
+//	  u16 music;
+//		u16 iGs;
+    
+		// 系统配置
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);//设置系统中断优先级分组2
+    delay_init(180);  //初始化延时函数 // 168
+	
+		// 模块初始化
+
+	
+//		Search_Init(); //红外
+//		Adc_Init(); // 灰度传感器+电压模块
+//	TIM4_PWM_Init(50-1,84-1,0,0,0,0); // 电机驱动 （84M/84=1Mhz的计数频率,重装载值500，所以PWM频率为 1M/500=2Khz）
+	
+		//INA226_Init(); // 电压检测
+	   USART1_init(9600);//初始化串口波特率为115200 // 查看电压检测情况
+		
+//    JR6001_Init(); //语音播报 //注意：内部会启动串口USART1
+	
+		//TIM14_PWM_Init(500-1,84-1); // mos
+		printf("begin\r\n");
+		TIM4_Init(9998,7199); // 50-1,84-1
+		HCSR04_GPIO_Init();
+		
+		printf("end\r\n");
+    while(1)
+    {
+			HCSR04_Start(); // 使能超声波传感器
+			delay_ms(2000);
+			//printf("return1\r\n");
+         
+//        Voltage = INA226_GetVoltage(WRITE_ADDR) * 1.251f;  //检测电压值
+//        if((Voltage>1)||(Voltage<-1)) {
+//            INA226_Init();
+//            Voltage = INA226_GetVoltage(WRITE_ADDR) * 1.251f;  
+//        }
+//        printf("%d mV\r\n",Voltage);
+				
+//				if(1){ // 若检测到行驶了一圈
+//					music=1;
+//				  JR6001_Voice(music); // musicFile 为文件名
+//				}
+				
+//				TIM_SetCompare1(TIM14,0); //MOS测试
+//				delay_ms(100);
+//				TIM_SetCompare1(TIM14,65535);
+//				delay_ms(100);
+				
+				//iGs = Get_Adc_Average(ADC_Channel_1, 10);
+//printf("Channel_0  ：%d				",Get_Adc_Average(ADC_Channel_0, 10));
+				//printf("A8:02/00001*mp3");
+				//delay_ms(100);
+				//printf("Channel_1  ：%d\r\n",Get_Adc_Average(ADC_Channel_1, 10));
+				//printf("return2\r\n");
+				
+				//delay_ms(2000);
+    }
+}
+
